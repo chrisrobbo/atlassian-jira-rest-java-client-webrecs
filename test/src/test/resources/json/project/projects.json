@@ -1,0 +1,38 @@
+[
+	{
+		"self": "http://localhost:8090/jira/rest/api/latest/project/TST",
+		"key": "TST",
+		"id": "10000",
+		"name": "Test Project",
+		"projectCategory": {
+			"self": "http://localhost:2990/jira/rest/api/latest/projectCategory/10000",
+			"id": "10000",
+			"name": "FIRST",
+			"description": "First Project Category"
+		}
+	},
+	{
+		"self": "http://localhost:8090/jira/rest/api/latest/project/ANNON",
+		"key": "ANNON",
+		"id": "10001",
+		"name": "Anonymously Accessible Project",
+		"projectCategory": {
+			"self": "http://localhost:2990/jira/rest/api/latest/projectCategory/10000",
+			"id": "10000",
+			"name": "FIRST",
+			"description": "First Project Category"
+		}
+	},
+	{
+		"self": "http://localhost:8090/jira/rest/api/latest/project/RST",
+		"key": "RST",
+		"id": "10002",
+		"name": "Restricted Project",
+		"projectCategory": {
+			"self": "http://localhost:2990/jira/rest/api/latest/projectCategory/10000",
+			"id": "10000",
+			"name": "FIRST",
+			"description": "First Project Category"
+		}
+	}
+]

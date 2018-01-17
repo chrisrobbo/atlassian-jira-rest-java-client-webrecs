@@ -1,0 +1,12 @@
+{
+	"self":"http://localhost:8090/jira/rest/api/latest/project/RST",
+	"key":"RST",
+	"name": "Example",
+	"id" : "10000",
+	"projectCategory": {
+		"self": "http://localhost:2990/jira/rest/api/latest/projectCategory/10000",
+		"id": "10000",
+		"name": "FIRST",
+		"description": "First Project Category"
+	}
+}
