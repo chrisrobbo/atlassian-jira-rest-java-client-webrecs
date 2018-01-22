@@ -709,6 +709,7 @@
             "remainingEstimateSeconds": 0,
             "timeSpentSeconds": 8700
         },
+        "customfield_10000": "<p>1.457</p>",
         "attachment": [
             {
                 "self": "http://localhost:8090/jira/rest/api/2/attachment/10062",

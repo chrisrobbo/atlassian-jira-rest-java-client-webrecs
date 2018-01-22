@@ -40,6 +40,7 @@ import java.util.Set;
 
 import static com.atlassian.jira.rest.client.api.IssueRestClient.Expandos.NAMES;
 import static com.atlassian.jira.rest.client.api.IssueRestClient.Expandos.SCHEMA;
+import static com.atlassian.jira.rest.client.api.IssueRestClient.Expandos.RENDERED_FIELDS;
 
 /**
  * Asynchronous implementation of SearchRestClient.
@@ -51,7 +52,7 @@ public class AsynchronousSearchRestClient extends AbstractAsynchronousRestClient
 	private static final Function<IssueRestClient.Expandos, String> EXPANDO_TO_PARAM = new Function<IssueRestClient.Expandos, String>() {
 		@Override
 		public String apply(IssueRestClient.Expandos from) {
-			return from.name().toLowerCase();
+			return from.getValue();
 		}
 	};
 
@@ -86,7 +87,7 @@ public class AsynchronousSearchRestClient extends AbstractAsynchronousRestClient
 	}
 
 	public Promise<SearchResult> searchJql(@Nullable String jql, @Nullable Integer maxResults, @Nullable Integer startAt, @Nullable Set<String> fields) {
-		final Iterable<String> expandosValues = Iterables.transform(ImmutableList.of(SCHEMA, NAMES), EXPANDO_TO_PARAM);
+		final Iterable<String> expandosValues = Iterables.transform(ImmutableList.of(SCHEMA, NAMES, RENDERED_FIELDS), EXPANDO_TO_PARAM);
 		final String notNullJql = StringUtils.defaultString(jql);
 		if (notNullJql.length() > MAX_JQL_LENGTH_FOR_HTTP_GET) {
 			return searchJqlImplPost(maxResults, startAt, expandosValues, notNullJql, fields);

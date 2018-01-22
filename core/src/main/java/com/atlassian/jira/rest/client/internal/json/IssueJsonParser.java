@@ -112,6 +112,7 @@ public class IssueJsonParser implements JsonObjectParser<Issue> {
 	private final JsonWeakParserForString jsonWeakParserForString = new JsonWeakParserForString();
 
 	private static final String FIELDS = "fields";
+	private static final String FIELDS_HTML = "renderedFields";
 	private static final String VALUE_ATTR = "value";
 
 	private final JSONObject providedNames;
@@ -192,9 +193,9 @@ public class IssueJsonParser implements JsonObjectParser<Issue> {
 	}
 
 	@Nullable
-	private String getOptionalFieldStringUnisex(final JSONObject json, final String attributeName)
+	private String getOptionalFieldStringUnisex(final JSONObject json, final String attributeName, boolean asHTML)
 			throws JSONException {
-		final JSONObject fieldsJson = json.getJSONObject(FIELDS);
+		final JSONObject fieldsJson = getJsonObject(json,asHTML);
 		return JsonParseUtil.getOptionalString(fieldsJson, attributeName);
 	}
 
@@ -217,16 +218,18 @@ public class IssueJsonParser implements JsonObjectParser<Issue> {
 				: parseArray(commentsJson, new JsonWeakParserForJsonObject<Comment>(commentJsonParser), "comments");
 
 		final String summary = getFieldStringValue(issueJson, SUMMARY_FIELD.id);
-		final String description = getOptionalFieldStringUnisex(issueJson, DESCRIPTION_FIELD.id);
+		final String description = getOptionalFieldStringUnisex(issueJson, DESCRIPTION_FIELD.id, false);
+		final String descriptionAsHTML = getOptionalFieldStringUnisex(issueJson, DESCRIPTION_FIELD.id, true);
 
 		final Collection<Attachment> attachments = parseOptionalArray(issueJson, new JsonWeakParserForJsonObject<Attachment>(attachmentJsonParser), FIELDS, ATTACHMENT_FIELD.id);
-		final Collection<IssueField> fields = parseFields(issueJson);
+		final Collection<IssueField> fieldsAsHTML = parseFields(issueJson, true);
+		final Collection<IssueField> fields = parseFields(issueJson, false);
 
 		final IssueType issueType = issueTypeJsonParser.parse(getFieldUnisex(issueJson, ISSUE_TYPE_FIELD.id));
 		final DateTime creationDate = JsonParseUtil.parseDateTime(getFieldStringUnisex(issueJson, CREATED_FIELD.id));
 		final DateTime updateDate = JsonParseUtil.parseDateTime(getFieldStringUnisex(issueJson, UPDATED_FIELD.id));
 
-		final String dueDateString = getOptionalFieldStringUnisex(issueJson, DUE_DATE_FIELD.id);
+		final String dueDateString = getOptionalFieldStringUnisex(issueJson, DUE_DATE_FIELD.id, false);
 		final DateTime dueDate = dueDateString == null ? null : JsonParseUtil.parseDateTimeOrDate(dueDateString);
 
 		final BasicPriority priority = getOptionalNestedField(issueJson, PRIORITY_FIELD.id, priorityJsonParser);
@@ -255,7 +258,7 @@ public class IssueJsonParser implements JsonObjectParser<Issue> {
 			Object transitionsObj = issueJson.get(IssueFieldId.TRANSITIONS_FIELD.id);
 			transitionsUriString = (transitionsObj instanceof String) ? (String) transitionsObj : null;
 		} else {
-			transitionsUriString = getOptionalFieldStringUnisex(issueJson, IssueFieldId.TRANSITIONS_FIELD.id);
+			transitionsUriString = getOptionalFieldStringUnisex(issueJson, IssueFieldId.TRANSITIONS_FIELD.id, false);
 		}
 		final URI transitionsUri = parseTransisionsUri(transitionsUriString, selfUri);
 
@@ -282,7 +285,7 @@ public class IssueJsonParser implements JsonObjectParser<Issue> {
 				description, priority, resolution, attachments, reporter, assignee, creationDate, updateDate,
 				dueDate, affectedVersions, fixVersions, components, timeTracking, fields, comments,
 				transitionsUri, issueLinks,
-				votes, worklogs, watchers, expandos, subtasks, changelog, operations, labels);
+				votes, worklogs, watchers, expandos, subtasks, changelog, operations, labels, descriptionAsHTML, fieldsAsHTML);
 	}
 
 	private URI parseTransisionsUri(final String transitionsUriString, final URI selfUri) {
@@ -302,13 +305,13 @@ public class IssueJsonParser implements JsonObjectParser<Issue> {
 		return null;
 	}
 
-	private Collection<IssueField> parseFields(final JSONObject issueJson) throws JSONException {
+	private Collection<IssueField> parseFields(final JSONObject issueJson, boolean asHTML) throws JSONException {
 		final JSONObject names = (providedNames != null) ? providedNames : issueJson.optJSONObject(NAMES_SECTION);
 		final Map<String, String> namesMap = parseNames(names);
 		final JSONObject schema = (providedSchema != null) ? providedSchema : issueJson.optJSONObject(SCHEMA_SECTION);
 		final Map<String, String> typesMap = parseSchema(schema);
 
-		final JSONObject json = issueJson.getJSONObject(FIELDS);
+		final JSONObject json = getJsonObject(issueJson, asHTML);
 		final ArrayList<IssueField> res = new ArrayList<IssueField>(json.length());
 		@SuppressWarnings("unchecked")
 		final Iterator<String> iterator = json.keys();
@@ -333,6 +336,20 @@ public class IssueJsonParser implements JsonObjectParser<Issue> {
 			}
 		}
 		return res;
+	}
+
+	private JSONObject getJsonObject(JSONObject issueJson, boolean asHTML) throws JSONException {
+		JSONObject json;
+		if(asHTML) {
+			if(issueJson.has(FIELDS_HTML)) {
+				json = issueJson.getJSONObject(FIELDS_HTML);
+			} else {
+				json = new JSONObject("{ " + FIELDS_HTML + ": { } }");
+			}
+		} else {
+			json = issueJson.getJSONObject(FIELDS);
+		}
+		return json;
 	}
 
 	private Map<String, String> parseSchema(final JSONObject json) throws JSONException {

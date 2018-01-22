@@ -36,7 +36,6 @@ import com.atlassian.jira.rest.client.api.domain.OperationGroup;
 import com.atlassian.jira.rest.client.api.domain.OperationHeader;
 import com.atlassian.jira.rest.client.api.domain.OperationLink;
 import com.atlassian.jira.rest.client.api.domain.Operations;
-import com.atlassian.jira.rest.client.api.domain.ProjectCategory;
 import com.atlassian.jira.rest.client.api.domain.Subtask;
 import com.atlassian.jira.rest.client.api.domain.TimeTracking;
 import com.atlassian.jira.rest.client.api.domain.Visibility;
@@ -55,7 +54,6 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.Iterator;
 
-import static com.atlassian.jira.rest.client.IntegrationTestUtil.resolveURI;
 import static com.atlassian.jira.rest.client.TestUtil.toDateTime;
 import static com.atlassian.jira.rest.client.TestUtil.toDateTimeFromIsoDate;
 import static com.atlassian.jira.rest.client.TestUtil.toUri;
@@ -80,8 +78,7 @@ public class IssueJsonParserTest {
 		assertEquals("my description", issue.getDescription());
 		assertEquals(Long.valueOf(10010), issue.getId());
 
-		final BasicProject expectedProject = new BasicProject(toUri("http://localhost:8090/jira/rest/api/2/project/TST"), "TST", 10000L, "Test Project", new ProjectCategory(
-				resolveURI("http://localhost:2990/jira/rest/api/latest/projectCategory/10000"), 10000L, "FIRST", "First Project Category"));
+		final BasicProject expectedProject = new BasicProject(toUri("http://localhost:8090/jira/rest/api/2/project/TST"), "TST", 10000L, "Test Project");
 		assertEquals(expectedProject, issue.getProject());
 
 		assertEquals("Major", issue.getPriority().getName());
@@ -165,6 +162,31 @@ public class IssueJsonParserTest {
 		assertEquals(1.457, issue.getField("customfield_10000").getValue());
 
 		// TODO: add assertions for more custom field types after fixing JRJC-122
+	}
+
+	@Test
+	public void testParseIssueWithRenderedFieldsReturnsRenderedField() throws Exception {
+		final Issue issue = parseIssue("/json/issue/valid-all-expanded.json");
+		assertEquals("<p>1.457</p>", issue.getFieldAsHTML("customfield_10000").getValue());
+		assertEquals("", issue.getFieldAsHTML("customfield_10011").getValue());
+	}
+
+	@Test
+	public void testParseIssueWithNonExistingRenderedFieldsReturnsNull() throws Exception {
+		final Issue issue = parseIssue("/json/issue/valid-all-expanded.json");
+		assertNull(issue.getFieldAsHTML("notExisting"));
+	}
+
+	@Test
+	public void testParseIssueWithNonExistingRenderedDescriptionReturnsNull() throws Exception {
+		final Issue withoutRender = parseIssue("/json/issue/valid-5.0.json");
+		assertNull(withoutRender.getDescriptionAsHTML());
+	}
+
+	@Test
+	public void testParseIssueWithRenderedDescriptionReturnsRenderedDescription() throws Exception {
+		final Issue issue = parseIssue("/json/issue/valid-all-expanded.json");
+		assertEquals("<p>my description</p>", issue.getDescriptionAsHTML());
 	}
 
 	private Issue parseIssue(final String resourcePath) throws JSONException {

@@ -296,7 +296,7 @@ public interface IssueRestClient {
 	 * Expandos supported by {@link IssueRestClient#getIssue(String, Iterable)}
 	 */
 	public enum Expandos {
-		CHANGELOG("changelog"), OPERATIONS("operations"), SCHEMA("schema"), NAMES("names"), TRANSITIONS("transitions");
+		CHANGELOG("changelog"), OPERATIONS("operations"), SCHEMA("schema"), NAMES("names"), TRANSITIONS("transitions"), RENDERED_FIELDS("renderedFields");
 
 		private final String value;
 

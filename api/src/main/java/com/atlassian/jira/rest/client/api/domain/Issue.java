@@ -44,7 +44,7 @@ public class Issue extends BasicIssue implements ExpandableResource {
 			@Nullable Collection<IssueLink> issueLinks,
 			BasicVotes votes, Collection<Worklog> worklogs, BasicWatchers watchers, Iterable<String> expandos,
 			@Nullable Collection<Subtask> subtasks, @Nullable Collection<ChangelogGroup> changelog, @Nullable Operations operations,
-			Set<String> labels) {
+			Set<String> labels, @Nullable String descriptionAsHTML, Collection<IssueField> issueFieldsAsHTML) {
 		super(self, key, id);
 		this.summary = summary;
 		this.project = project;
@@ -75,6 +75,8 @@ public class Issue extends BasicIssue implements ExpandableResource {
 		this.changelog = changelog;
 		this.operations = operations;
 		this.labels = labels;
+		this.descriptionAsHTML = descriptionAsHTML;
+		this.issueFieldsAsHTML = issueFieldsAsHTML;
 	}
 
 	private final Status status;
@@ -121,6 +123,10 @@ public class Issue extends BasicIssue implements ExpandableResource {
 	@Nullable
 	private final Operations operations;
 	private final Set<String> labels;
+
+	@Nullable
+	private final String descriptionAsHTML;
+	private final Collection<IssueField> issueFieldsAsHTML;
 
 	public Status getStatus() {
 		return status;
@@ -182,6 +188,20 @@ public class Issue extends BasicIssue implements ExpandableResource {
 	@Nullable
 	public IssueField getField(String id) {
 		for (IssueField issueField : issueFields) {
+			if (issueField.getId().equals(id)) {
+				return issueField;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @param id identifier of the field
+	 * @return rendered field with given id, or <code>null</code> when no rendered field with given id exists for this issue
+	 */
+	@Nullable
+	public IssueField getFieldAsHTML(String id) {
+		for (IssueField issueField : issueFieldsAsHTML) {
 			if (issueField.getId().equals(id)) {
 				return issueField;
 			}
@@ -351,6 +371,11 @@ public class Issue extends BasicIssue implements ExpandableResource {
 	@Nullable
 	public String getDescription() {
 		return description;
+	}
+
+	@Nullable
+	public String getDescriptionAsHTML() {
+		return descriptionAsHTML;
 	}
 
 	@Override
