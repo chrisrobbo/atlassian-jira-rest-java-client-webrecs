@@ -196,7 +196,10 @@ public class JsonParseUtil {
 
 		// deleted user? BUG in REST API: JRA-30263
 		final URI selfUri = optSelfUri(json, BasicUser.INCOMPLETE_URI);
-		return new BasicUser(selfUri, username, json.optString("displayName", null));
+
+		final String accountId = json.getString("accountId");
+
+		return new BasicUser(selfUri, username, json.optString("displayName", null), accountId);
 	}
 
 	public static DateTime parseDateTime(final JSONObject jsonObject, final String attributeName) throws JSONException {

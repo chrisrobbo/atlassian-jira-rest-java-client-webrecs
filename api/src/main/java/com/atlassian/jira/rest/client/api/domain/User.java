@@ -46,10 +46,10 @@ public class User extends BasicUser {
 	 */
 	@Nullable
 	private String timezone;
-
-	public User(URI self, String name, String displayName, String emailAddress, @Nullable ExpandableProperty<String> groups,
+//webrecs added accountId
+	public User(URI self, String name, String displayName, String emailAddress, String accountId, @Nullable ExpandableProperty<String> groups,
 			Map<String, URI> avatarUris, @Nullable String timezone) {
-		super(self, name, displayName);
+		super(self, name, displayName, accountId );
 		Preconditions.checkNotNull(avatarUris.get(S48_48), "At least one avatar URL is expected - for 48x48");
 		this.timezone = timezone;
 		this.emailAddress = emailAddress;

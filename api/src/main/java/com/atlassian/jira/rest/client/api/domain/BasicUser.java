@@ -35,16 +35,22 @@ public class BasicUser extends AddressableNamedEntity {
 	public static URI INCOMPLETE_URI = URI.create("incomplete://user");
 
 	private final String displayName;
-
-	public BasicUser(URI self, String name, String displayName) {
+	private final String accountId;
+// webrecs added accountId
+	public BasicUser(URI self, String name, String displayName, String accountId) {
 		super(self, name);
 		this.displayName = displayName;
+		this.accountId = accountId;
 	}
 
 	public String getDisplayName() {
 		return displayName;
 	}
 
+//webrecs added accountId
+	public String getAccountId() {
+		return accountId;
+	}
 	@Override
 	protected Objects.ToStringHelper getToStringHelper() {
 		return super.getToStringHelper()

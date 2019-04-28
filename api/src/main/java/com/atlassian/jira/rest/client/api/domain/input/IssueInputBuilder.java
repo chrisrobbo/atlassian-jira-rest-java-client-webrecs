@@ -145,6 +145,10 @@ public class IssueInputBuilder {
 	public IssueInputBuilder setAssigneeName(String assignee) {
 		return setFieldInput(new FieldInput(IssueFieldId.ASSIGNEE_FIELD, ComplexIssueInputFieldValue.with("name", assignee)));
 	}
+//webrecs added this for GDPR. Note that assignee must be of form 557058:be422201-a723-4890-b2e7-5afb74955c52
+	public IssueInputBuilder setAssigneeAccountID(String assignee) {
+		return setFieldInput(new FieldInput(IssueFieldId.ASSIGNEE_FIELD, ComplexIssueInputFieldValue.with("id", assignee)));
+	}
 
 	public IssueInput build() {
 		return new IssueInput(fields);
@@ -199,7 +203,11 @@ public class IssueInputBuilder {
 	public IssueInputBuilder setReporterName(String reporterName) {
 		return setFieldInput(new FieldInput(IssueFieldId.REPORTER_FIELD, ComplexIssueInputFieldValue.with("name", reporterName)));
 	}
-
+	
+	//webrecs added this for GDPR. Note that assignee must be of form 557058:be422201-a723-4890-b2e7-5afb74955c52
+	public IssueInputBuilder setReporterAccountID(String reporterName) {
+		return setFieldInput(new FieldInput(IssueFieldId.REPORTER_FIELD, ComplexIssueInputFieldValue.with("id", reporterName)));
+	}
 	/**
 	 * This method returns value transformer manager used to transform values by {@link IssueInputBuilder#setFieldValue(String, Object)}.
 	 * You may use this manager if you want register new custom transformer.
