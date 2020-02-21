@@ -189,7 +189,10 @@ public class JsonParseUtil {
 		if (json == null) {
 			return null;
 		}
-		final String username = json.getString("name");
+		//webrecs name is not passed, let's just use empty string
+		//final String username = json.getString("name");
+		final String username="";
+		//webrecs
 		if (!json.has(JsonParseUtil.SELF_ATTR) && "Anonymous".equals(username)) {
 			return null; // insane representation for unassigned user - JRADEV-4262
 		}
